@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión | WorldCar</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpeg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <main class="auth-page">
+    <section class="auth-card shadow-lg p-4 p-md-5">
+      <div class="text-center mb-4">
+        <img class="auth-logo mb-3" src="/assets/logoworldcar.jpeg" alt="WorldCar">
+        <h1 class="h3 mb-2" id="authTitle">Iniciar sesión</h1>
+        <p class="text-muted mb-0" id="authSubtitle">Accede a tu cuenta WorldCar</p>
+      </div>
+
+      <div id="authAlert" class="alert d-none" role="alert"></div>
+
+      <form id="authForm" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" id="email" name="email" autocomplete="email" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" title="Ingresa un correo válido, por ejemplo usuario@dominio.com" required>
+        </div>
+        <div id="registerFields" class="d-none">
+          <div class="mb-3">
+            <label for="nombres" class="form-label">Nombres</label>
+            <input type="text" class="form-control" id="nombres" name="nombres" autocomplete="given-name">
+          </div>
+          <div class="mb-3">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input type="text" class="form-control" id="apellidos" name="apellidos" autocomplete="family-name">
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="password" class="form-label">Contraseña</label>
+          <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" id="submitButton">Iniciar sesión</button>
+      </form>
+
+      <div class="text-center mt-4">
+        <span class="text-muted" id="switchText">¿Aún no tienes una cuenta?</span>
+        <button type="button" class="btn btn-link px-1" id="switchMode">Registrarse</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const authForm = document.querySelector('#authForm');
+    const authTitle = document.querySelector('#authTitle');
+    const authSubtitle = document.querySelector('#authSubtitle');
+    const submitButton = document.querySelector('#submitButton');
+    const switchText = document.querySelector('#switchText');
+    const switchMode = document.querySelector('#switchMode');
+    const authAlert = document.querySelector('#authAlert');
+    const registerFields = document.querySelector('#registerFields');
+    const registerInputs = [...registerFields.querySelectorAll('input')];
+    let isRegisterMode = false;
+
+    function showAlert(message, type = 'danger') {
+      authAlert.textContent = message;
+      authAlert.className = `alert alert-${type}`;
+    }
+
+    function saveUserSession(data) {
+      const user = data.user || data.usuario || data.data?.user || data.data;
+      if (user && typeof user === 'object') {
+        localStorage.setItem('worldcar_user', JSON.stringify(user));
+      }
+    }
+
+    function updateMode(registerMode = !isRegisterMode) {
+      isRegisterMode = registerMode;
+      authTitle.textContent = isRegisterMode ? 'Crear cuenta' : 'Iniciar sesión';
+      authSubtitle.textContent = isRegisterMode ? 'Regístrate para comenzar' : 'Accede a tu cuenta WorldCar';
+      submitButton.textContent = isRegisterMode ? 'Registrarse' : 'Iniciar sesión';
+      switchText.textContent = isRegisterMode ? '¿Ya tienes una cuenta?' : '¿Aún no tienes una cuenta?';
+      switchMode.textContent = isRegisterMode ? 'Iniciar sesión' : 'Registrarse';
+      registerFields.classList.toggle('d-none', !isRegisterMode);
+      registerInputs.forEach(input => { input.required = isRegisterMode; });
+      authForm.reset();
+      authAlert.className = 'alert d-none';
+    }
+
+    switchMode.addEventListener('click', () => updateMode(!isRegisterMode));
+
+    authForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!authForm.checkValidity()) {
+        authForm.classList.add('was-validated');
+        const invalidInput = authForm.querySelector(':invalid');
+        if (invalidInput) {
+          showAlert(invalidInput.validationMessage);
+          invalidInput.focus();
+        }
+        return;
+      }
+
+      authAlert.className = 'alert d-none';
+      submitButton.disabled = true;
+      submitButton.textContent = isRegisterMode ? 'Creando cuenta...' : 'Iniciando sesión...';
+      const formData = Object.fromEntries(new FormData(authForm));
+      const payload = isRegisterMode
+        ? {
+            nombres: formData.nombres,
+            apellidos: formData.apellidos,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone
+          }
+        : {
+            email: formData.email,
+            password: formData.password
+          };
+      const endpoint = isRegisterMode ? '/register' : '/login';
+
+      try {
+        const apiResponse = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await apiResponse.json().catch(() => ({}));
+
+        if (!apiResponse.ok) {
+          throw new Error(data.message || data.error || 'La operación no pudo completarse.');
+        }
+
+        if (isRegisterMode) {
+          saveUserSession(data);
+          updateMode(false);
+          showAlert('Usuario creado. Ahora puedes iniciar sesión.', 'success');
+        } else {
+          const token = data.token || data.accessToken || data.data?.token;
+          if (token) localStorage.setItem('worldcar_token', token);
+          saveUserSession(data);
+          window.location.href = '/home';
+        }
+      } catch (error) {
+        showAlert(error.message);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = isRegisterMode ? 'Registrarse' : 'Iniciar sesión';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home | Worldcar. C.A.</title>
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpeg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/home">
+        <img src="/assets/logoworldcar.jpeg" alt="WorldCar" width="32" height="32" style="object-fit: contain;"> WorldCar
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="d-lg-flex align-items-lg-center ms-auto gap-lg-3">
+          <aside id="sidebar-container" aria-label="Menú principal">
+            <!-- El menú dinámico se insertará aquí -->
+          </aside>
+          <ul class="navbar-nav">
+          <li class="nav-item dropdown ms-lg-3" id="userMenu">
+            <button class="nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span id="userName">Usuario</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><button class="dropdown-item" type="button" id="logoutButton">Cerrar sesión</button></li>
+            </ul>
+          </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section id="roleWorkspace" class="role-workspace d-none" aria-live="polite">
+    <div class="container py-4">
+      <p class="text-uppercase small mb-1" id="roleLabel"></p>
+      <h1 class="h3 mb-2" id="roleTitle">Módulos disponibles</h1>
+      <p class="text-muted mb-4" id="roleDescription"></p>
+      <div class="row g-3" id="roleModules"></div>
+      <p class="alert alert-info mt-3 d-none" id="emptyRoleMenu">
+        Este rol todavía no tiene módulos asignados. Contacta con un administrador.
+      </p>
+    </div>
+  </section>
+
+  <section id="adminUserPanel" class="admin-user-panel d-none">
+    <div class="container py-4">
+      <h2 class="h3 mb-3">Administración de usuarios</h2>
+      <p class="text-muted">Crea cuentas o cambia el rol de usuarios existentes.</p>
+      <div id="adminUserAlert" class="alert d-none" role="alert"></div>
+
+      <div class="admin-user-card p-3 p-md-4 mb-4">
+        <h3 class="h5 mb-3">Registrar usuario</h3>
+        <form id="adminCreateUserForm" class="row g-3">
+          <div class="col-md-6">
+            <label for="adminNombres" class="form-label">Nombres</label>
+            <input id="adminNombres" name="nombres" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adminApellidos" class="form-label">Apellidos</label>
+            <input id="adminApellidos" name="apellidos" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adminEmail" class="form-label">Correo electrónico</label>
+            <input id="adminEmail" name="email" type="email" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adminPhone" class="form-label">Teléfono</label>
+            <input id="adminPhone" name="phone" type="tel" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="adminPassword" class="form-label">Contraseña temporal</label>
+            <input id="adminPassword" name="password" type="password" minlength="6" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adminNewUserRole" class="form-label">Rol inicial</label>
+            <select id="adminNewUserRole" name="role" class="form-select" required></select>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit">Crear usuario</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-user-card p-3 p-md-4">
+        <h3 class="h5 mb-3">Usuarios registrados</h3>
+        <div class="table-responsive">
+          <table class="table admin-user-table align-middle mb-0">
+            <thead>
+              <tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="adminUsersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero p-0">
+    <div class="container"><div class="row justify-content-center"><div class="col-lg-8">
+      <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner rounded-4 shadow-lg">
+          <% heroVehicles.forEach((vehicle, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+              <img src="/assets/<%= vehicle.image %>" class="d-block w-100" alt="<%= vehicle.name %>">
+              <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                <h1 class="hero-title"><%= vehicle.name %></h1>
+                <p class="hero-subtitle"><%= vehicle.description %></p>
+                <a href="#catalogo" class="btn btn-primary btn-lg shadow">Ver Catálogo</a>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Anterior</span></button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Siguiente</span></button>
+      </div>
+    </div></div></div>
+  </section>
+
+  <section class="subscribe py-5"><div class="container"><div class="row justify-content-center"><div class="col-lg-6 subscribe-card">
+    <h2 class="text-center mb-4">Suscríbete a nuestro boletín</h2>
+    <form class="d-flex"><input type="email" class="form-control me-2" placeholder="Tu correo electrónico" required><button type="submit" class="btn btn-primary">Enviar</button></form>
+  </div></div></div></section>
+
+  <section id="catalogo" class="catalog py-5"><div class="container">
+    <div class="row justify-content-center mb-4"><div class="col-lg-10"><div class="border rounded-4 shadow-sm p-4 bg-dark bg-opacity-75">
+      <h2 class="text-center mb-3">Catálogo de vehículos</h2><p class="text-center text-muted mb-4">Filtra por marca, modelo, año y condición para encontrar tu próximo auto.</p>
+      <div class="row g-3">
+        <% [['Marca', ['Ferrari', 'Lamborghini', 'Bentley', 'Porsche']], ['Modelo', ['F8 Tributo', 'Aventador', 'California', 'Bentayga']], ['Año', ['2024', '2023', '2022', '2021']], ['Condición', ['Nuevo', 'Usado', 'Seminuevo']]].forEach(([label, options]) => { %>
+          <div class="col-12 col-md-6 col-lg-3"><label class="form-label"><%= label %></label><select class="form-select"><option selected>Selecciona <%= label.toLowerCase() %></option><% options.forEach(option => { %><option><%= option %></option><% }); %></select></div>
+        <% }); %>
+      </div>
+    </div></div></div>
+    <div class="row g-3"><div class="col-12"><div class="border rounded-4 shadow-sm p-3 bg-dark bg-opacity-75"><div class="row g-3">
+      <% vehicles.forEach(vehicle => { %>
+        <div class="col-6 col-md-4 col-lg-3"><div class="catalog-card"><img src="/assets/catalogo/<%= vehicle.image %>" alt="<%= vehicle.name %>"><div class="catalog-card-info"><h3><%= vehicle.name %></h3><p class="catalog-card-price"><%= vehicle.price %></p><p class="catalog-card-year">Año <%= vehicle.year %></p></div></div></div>
+      <% }); %>
+    </div></div></div></div>
+  </div></section>
+
+  <section id="sedes" class="sedes py-5"><div class="container">
+    <div class="row justify-content-center mb-4"><div class="col-lg-10"><div class="border rounded-4 shadow-sm p-4"><h2 class="text-center mb-3">Nuestras sedes en Caracas</h2><p class="text-center text-muted mb-4">Seis ubicaciones estratégicas en Caracas. Haz clic en cada sede para ver el mapa y las coordenadas geográficas.</p></div></div></div>
+    <div class="row g-3"><% branches.forEach(branch => { %><div class="col-12 col-sm-6 col-lg-4"><div class="sede-card" data-bs-toggle="modal" data-bs-target="#sedeModal<%= branch.id %>" role="button" tabindex="0"><div><h5><%= branch.name %></h5><p class="mb-1"><strong>Dirección:</strong> <%= branch.address %></p><p class="mb-0"><strong>Teléfono:</strong> <%= branch.phone %></p></div><div class="sede-card-footer text-end"><small>Ver mapa</small></div></div></div><% }); %></div>
+  </div></section>
+
+  <section id="contacto" class="contact py-5"><div class="container"><div class="row justify-content-center"><div class="col-lg-8"><div class="border rounded-4 shadow-sm p-4 bg-dark bg-opacity-75">
+    <h2 class="text-center mb-4 text-white">Contáctanos</h2><p class="text-center text-muted mb-4">Envíanos un mensaje y nos pondremos en contacto contigo pronto.</p>
+    <form><div class="row g-3"><div class="col-md-6"><label for="nombre" class="form-label text-white">Nombre y Apellido</label><input type="text" class="form-control" id="nombre" placeholder="Tu nombre completo" required></div><div class="col-md-6"><label for="email" class="form-label text-white">Correo Electrónico</label><input type="email" class="form-control" id="email" placeholder="tu@email.com" required></div><div class="col-12"><label for="mensaje" class="form-label text-white">Mensaje</label><textarea class="form-control" id="mensaje" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea></div><div class="col-12 text-center"><button type="submit" class="btn btn-primary btn-lg">Enviar Mensaje</button></div></div></form>
+  </div></div></div></div></section>
+
+  <section id="servicios" class="services py-4"><div class="container"><div class="row justify-content-center"><div class="col-lg-10"><div class="border rounded-4 shadow-sm p-4">
+    <h2 class="text-center mb-4">Servicios y Repuestos</h2><p class="text-center text-muted mb-4">Selecciona el modelo de tu vehículo y el servicio o repuesto que necesitas.</p>
+    <form><div class="row g-3 justify-content-center"><div class="col-md-5"><label for="modeloVehiculo" class="form-label">Modelo de Vehículo</label><select class="form-select" id="modeloVehiculo"><option selected>Selecciona el modelo</option><% vehicles.forEach(vehicle => { %><option><%= vehicle.name %></option><% }); %></select></div><div class="col-md-5"><label for="servicioRepuesto" class="form-label">Servicio o Repuesto</label><select class="form-select" id="servicioRepuesto"><option selected>Selecciona el servicio</option><% ['Cambio de aceite', 'Reparación de motor', 'Cambio de transmisión', 'Servicio de frenado', 'Suspensión y amortiguadores', 'Diagnóstico electrónico', 'Cambio de neumáticos', 'Alineación y balanceo', 'Repuestos originales', 'Mantenimiento general'].forEach(service => { %><option><%= service %></option><% }); %></select></div><div class="col-12 text-center mt-3"><button type="submit" class="btn btn-primary">Solicitar Servicio</button></div></div></form>
+  </div></div></div></div></section>
+
+  <% branches.forEach(branch => { %>
+    <div class="modal fade" id="sedeModal<%= branch.id %>" tabindex="-1" aria-labelledby="sedeModal<%= branch.id %>Label" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content bg-dark text-white"><div class="modal-header border-0"><h5 class="modal-title" id="sedeModal<%= branch.id %>Label">Sede <%= branch.name %></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button></div><div class="modal-body"><p><strong>Dirección:</strong> <%= branch.address %><br><strong>Teléfono:</strong> <%= branch.phone %><br><strong>Coordenadas:</strong> <%= branch.coordinates %></p><div class="ratio ratio-16x9 modal-map mb-3"><iframe src="https://www.google.com/maps?q=<%= branch.coordinates %>&z=15&output=embed" allowfullscreen loading="lazy"></iframe></div></div></div></div></div>
+  <% }); %>
+
+  <footer class="bg-dark text-white py-4 mt-auto"><div class="container"><div class="row g-4"><div class="col-md-4"><h5 class="mb-3">WorldCar</h5><p class="small mb-0">Tu concesionario de confianza para vehículos de lujo en Caracas.</p></div><div class="col-md-4"><h5 class="mb-3">Enlaces</h5><ul class="list-unstyled small mb-0"><li><a href="#catalogo" class="text-white-50 text-decoration-none">Catálogo</a></li><li><a href="#sedes" class="text-white-50 text-decoration-none">Sedes</a></li><li><a href="#contacto" class="text-white-50 text-decoration-none">Contacto</a></li></ul></div><div class="col-md-4"><h5 class="mb-3">Contacto</h5><p class="small mb-1">+58 212 555 0101</p><p class="small mb-0">info@worldcar.com.ve</p></div></div><hr class="my-3 border-secondary"><p class="small mb-0">&copy; 2024 WorldCar. C.A. Todos los derechos reservados.</p></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <script>
+    function renderDynamicMenu(modules, containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const nav = document.createElement('nav');
+      nav.className = 'sidebar-nav';
+      nav.setAttribute('aria-label', 'Navegación principal');
+      const list = document.createElement('ul');
+      list.className = 'menu-list';
+
+      modules.filter(module => module.isActive).forEach(module => {
+        const item = document.createElement('li');
+        item.className = 'menu-item';
+        const link = document.createElement('a');
+        link.className = 'menu-link';
+        link.href = `#module-${encodeURIComponent(module.id)}`;
+        link.textContent = module.name;
+        if (module.description) link.title = module.description;
+        item.append(link);
+
+        const activeSubmodules = (module.subModules || []).filter(sub => sub.isActive);
+        if (activeSubmodules.length) {
+          item.classList.add('has-submenu');
+          const subList = document.createElement('ul');
+          subList.className = 'submenu-list';
+          activeSubmodules.forEach(submodule => {
+            const subItem = document.createElement('li');
+            subItem.className = 'submenu-item';
+            const subLink = document.createElement('a');
+            subLink.className = 'submenu-link';
+            subLink.href = `#submodule-${encodeURIComponent(submodule.id)}`;
+            subLink.textContent = submodule.name;
+            if (submodule.description) subLink.title = submodule.description;
+            subItem.append(subLink);
+            subList.append(subItem);
+          });
+          item.append(subList);
+        }
+        list.append(item);
+      });
+
+      nav.append(list);
+      container.replaceChildren(nav);
+    }
+
+    const userName = document.querySelector('#userName');
+    const logoutButton = document.querySelector('#logoutButton');
+    const roleWorkspace = document.querySelector('#roleWorkspace');
+    const roleLabel = document.querySelector('#roleLabel');
+    const roleTitle = document.querySelector('#roleTitle');
+    const roleDescription = document.querySelector('#roleDescription');
+    const roleModules = document.querySelector('#roleModules');
+    const emptyRoleMenu = document.querySelector('#emptyRoleMenu');
+    const adminUserPanel = document.querySelector('#adminUserPanel');
+    const adminUserAlert = document.querySelector('#adminUserAlert');
+    const adminCreateUserForm = document.querySelector('#adminCreateUserForm');
+    const adminNewUserRole = document.querySelector('#adminNewUserRole');
+    const adminUsersTable = document.querySelector('#adminUsersTable');
+    let currentUserId;
+    let availableRoles = [];
+
+    async function adminApiRequest(path, options = {}) {
+      const token = localStorage.getItem('worldcar_token');
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+          ...options.headers,
+        },
+      });
+      const data = response.status === 204 ? null : await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.message || `La solicitud falló (HTTP ${response.status}).`);
+      }
+      return data;
+    }
+
+    function showAdminUserAlert(message, type = 'danger') {
+      adminUserAlert.textContent = message;
+      adminUserAlert.className = `alert alert-${type}`;
+    }
+
+    function renderAdminUsers(users) {
+      adminUsersTable.replaceChildren();
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        nameCell.textContent = [user.nombres, user.apellidos].filter(Boolean).join(' ');
+        const emailCell = document.createElement('td');
+        emailCell.textContent = user.email;
+        const roleCell = document.createElement('td');
+        const roleSelect = document.createElement('select');
+        roleSelect.className = 'form-select form-select-sm';
+        roleSelect.setAttribute('aria-label', `Rol de ${user.email}`);
+        availableRoles.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role.id;
+          option.textContent = role.name;
+          roleSelect.append(option);
+        });
+        roleSelect.value = String(user.role);
+        roleSelect.disabled = user.id === currentUserId;
+        roleCell.append(roleSelect);
+
+        const actionCell = document.createElement('td');
+        const saveButton = document.createElement('button');
+        saveButton.type = 'button';
+        saveButton.className = 'btn btn-primary btn-sm';
+        saveButton.textContent = 'Guardar rol';
+        saveButton.disabled = user.id === currentUserId;
+        saveButton.addEventListener('click', async () => {
+          saveButton.disabled = true;
+          try {
+            await adminApiRequest(`/api/users/${encodeURIComponent(user.id)}`, {
+              method: 'PUT',
+              body: JSON.stringify({ role: Number(roleSelect.value) }),
+            });
+            showAdminUserAlert(`Rol actualizado para ${user.email}.`, 'success');
+          } catch (error) {
+            showAdminUserAlert(error.message);
+          } finally {
+            saveButton.disabled = false;
+          }
+        });
+        actionCell.append(saveButton);
+        row.append(nameCell, emailCell, roleCell, actionCell);
+        adminUsersTable.append(row);
+      });
+    }
+
+    async function loadAdminUsers() {
+      try {
+        const [users, roles] = await Promise.all([
+          adminApiRequest('/api/users'),
+          adminApiRequest('/api/users/roles'),
+        ]);
+        if (!Array.isArray(users) || !Array.isArray(roles)) {
+          throw new TypeError('El servidor devolvió datos de usuarios inválidos.');
+        }
+        availableRoles = roles;
+        adminNewUserRole.replaceChildren();
+        roles.forEach(role => {
+          const option = document.createElement('option');
+          option.value = role.id;
+          option.textContent = role.name;
+          adminNewUserRole.append(option);
+        });
+        adminNewUserRole.value = String(roles.find(role => role.name === 'User')?.id || '');
+        renderAdminUsers(users);
+      } catch (error) {
+        showAdminUserAlert(error.message);
+      }
+    }
+
+    adminCreateUserForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!adminCreateUserForm.reportValidity()) return;
+
+      const formData = Object.fromEntries(new FormData(adminCreateUserForm));
+      const submitButton = adminCreateUserForm.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      try {
+        const user = await adminApiRequest('/api/users', {
+          method: 'POST',
+          body: JSON.stringify({
+            ...formData,
+            role: Number(formData.role),
+          }),
+        });
+        adminCreateUserForm.reset();
+        adminNewUserRole.value = String(availableRoles.find(role => role.name === 'User')?.id || '');
+        showAdminUserAlert(`Se creó la cuenta de ${user.email}.`, 'success');
+        await loadAdminUsers();
+      } catch (error) {
+        showAdminUserAlert(error.message);
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
+    function renderRoleWorkspace(user) {
+      const role = user.roleDetails;
+      const modules = Array.isArray(role?.menu) ? role.menu.filter(module => module.isActive) : [];
+      const roleName = role?.name || 'Usuario';
+      const fullName = [user.nombres, user.apellidos].filter(Boolean).join(' ');
+      userName.textContent = fullName || user.email || roleName;
+      roleLabel.textContent = `Sesión de ${roleName}`;
+      roleTitle.textContent = `Panel de ${roleName}`;
+      roleDescription.textContent = modules.length
+        ? 'Estos son los módulos habilitados para tu rol.'
+        : 'No tienes módulos habilitados actualmente.';
+      roleModules.replaceChildren();
+      currentUserId = user.id;
+
+      modules.forEach(module => {
+        const column = document.createElement('div');
+        column.className = 'col-12 col-md-6 col-xl-4';
+        column.id = `module-${module.id}`;
+        const card = document.createElement('article');
+        card.className = 'card h-100 shadow-sm';
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        const title = document.createElement('h2');
+        title.className = 'h5 card-title';
+        title.textContent = module.name;
+        const description = document.createElement('p');
+        description.className = 'card-text text-muted';
+        description.textContent = module.description || '';
+        body.append(title, description);
+
+        const submodules = (module.subModules || []).filter(submodule => submodule.isActive);
+        if (submodules.length) {
+          const list = document.createElement('ul');
+          list.className = 'list-group list-group-flush';
+          submodules.forEach(submodule => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item px-0';
+            item.id = `submodule-${submodule.id}`;
+            const subTitle = document.createElement('strong');
+            subTitle.textContent = submodule.name;
+            item.append(subTitle);
+            if (submodule.description) {
+              const subDescription = document.createElement('p');
+              subDescription.className = 'small text-muted mb-0';
+              subDescription.textContent = submodule.description;
+              item.append(subDescription);
+            }
+            list.append(item);
+          });
+          card.append(body, list);
+        } else {
+          card.append(body);
+        }
+        column.append(card);
+        roleModules.append(column);
+      });
+
+      emptyRoleMenu.classList.toggle('d-none', modules.length > 0);
+      roleWorkspace.classList.remove('d-none');
+      renderDynamicMenu(modules, 'sidebar-container');
+      if (roleName === 'Admin') {
+        adminUserPanel.classList.remove('d-none');
+        loadAdminUsers();
+      } else {
+        adminUserPanel.classList.add('d-none');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('worldcar_token');
+      if (!token) {
+        window.location.replace('/login');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.status === 401) {
+          localStorage.removeItem('worldcar_token');
+          localStorage.removeItem('worldcar_user');
+          window.location.replace('/login');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`No se pudo cargar el perfil (HTTP ${response.status}).`);
+        }
+
+        const { user } = await response.json();
+        if (!user || !user.roleDetails) {
+          throw new Error('El servidor no devolvió el rol del usuario.');
+        }
+        localStorage.setItem('worldcar_user', JSON.stringify(user));
+        renderRoleWorkspace(user);
+      } catch (error) {
+        console.error('No se pudo renderizar la página según el rol:', error);
+        roleDescription.textContent = error.message;
+        roleWorkspace.classList.remove('d-none');
+      }
+    });
+
+    logoutButton.addEventListener('click', () => {
+      localStorage.removeItem('worldcar_token');
+      localStorage.removeItem('worldcar_user');
+      window.location.href = '/login';
+    });
+  </script>
+</body>
+</html>
